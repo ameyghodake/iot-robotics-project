@@ -1,6 +1,6 @@
 import asyncio
 import aiohttp
-import socket
+import threading
 import paho.mqtt.client as mqtt
 from fastapi import FastAPI, Request
 import uvicorn
@@ -32,6 +32,7 @@ async def handle_tcp_connection(reader, writer, sensor_type):
         print(f"[TCP] Connection error for {sensor_type}: {e}")
     finally:
         writer.close()
+        await writer.wait_closed()
 
 
 async def tcp_listener(port, sensor_type):
@@ -51,7 +52,9 @@ async def tcp_listener(port, sensor_type):
 # MQTT Handlers
 def on_message(client, userdata, message):
     payload = message.payload.decode("utf-8")
-    asyncio.create_task(mqtt_data_queue.put(("motion", payload)))
+    asyncio.run_coroutine_threadsafe(
+        mqtt_data_queue.put(("motion", payload)), asyncio.get_running_loop()
+    )
 
 
 async def mqtt_listener():
@@ -62,6 +65,7 @@ async def mqtt_listener():
         client.subscribe(MQTT_TOPIC)
         client.loop_start()
         print(f"[MQTT] Listening to topic: {MQTT_TOPIC}")
+
         while True:
             sensor_type, value = await mqtt_data_queue.get()
             print(f"[MQTT] Received {sensor_type} data: {value}")
@@ -97,7 +101,8 @@ async def send_to_backend(sensor_type, value):
 
 
 # Main Coroutine
-async def main():
+async def start_middleware():
+    # Start all listeners concurrently
     await asyncio.gather(
         mqtt_listener(),
         tcp_listener(TCP_PORT_TEMP, "temperature"),
@@ -105,9 +110,14 @@ async def main():
     )
 
 
+# Start FastAPI and Middleware
 if __name__ == "__main__":
-    print("Starting middleware server...")
-    # Run FastAPI on a separate thread
-    asyncio.create_task(uvicorn.run(app, host="127.0.0.1", port=8001))
-    # Start all listeners
-    asyncio.run(main())
+    # Run FastAPI in a separate thread
+    def run_uvicorn():
+        uvicorn.run(app, host="127.0.0.1", port=8001, log_level="info")
+
+    # Start FastAPI server in a thread
+    threading.Thread(target=run_uvicorn, daemon=True).start()
+
+    # Start asyncio event loop for middleware
+    asyncio.run(start_middleware())
