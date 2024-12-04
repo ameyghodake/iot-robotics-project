@@ -59,7 +59,7 @@ def on_message(client, userdata, message):
 
 async def mqtt_listener():
     try:
-        client = mqtt.Client()
+        client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
         client.on_message = on_message
         client.connect(MQTT_BROKER, MQTT_PORT, 60)
         client.subscribe(MQTT_TOPIC)
