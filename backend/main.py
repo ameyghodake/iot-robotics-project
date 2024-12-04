@@ -5,7 +5,11 @@ from .database import SessionLocal, init_db
 from .models import SensorData
 
 # Initialize database
-init_db()
+try:
+    init_db()
+except Exception as e:
+    print(e)
+
 
 app = FastAPI()
 

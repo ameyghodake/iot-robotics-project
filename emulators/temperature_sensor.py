@@ -16,7 +16,7 @@ async def send_temperature_data():
             writer.write(message.encode("utf-8"))
             await writer.drain()
             print(f"Sent temperature data: {message.strip()}")
-            await asyncio.sleep(2)  # Send data every 2 seconds
+            await asyncio.sleep(5)  # Send data every 5 seconds
 
     except ConnectionRefusedError:
         print(
@@ -28,11 +28,4 @@ async def send_temperature_data():
         if "writer" in locals() and not writer.is_closing():
             writer.close()
             await writer.wait_closed()
-        print("Connection closed.")
-
-
-if __name__ == "__main__":
-    try:
-        asyncio.run(send_temperature_data())
-    except KeyboardInterrupt:
-        print("Temperature sensor emulator stopped.")
+        print("Temperature connection closed.")
