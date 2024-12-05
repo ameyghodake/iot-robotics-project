@@ -39,7 +39,7 @@ Ensure you have the following installed:
 
 ## Architecture
 
-![alt text](Architecture.png)
+![alt text](docs/Architecture.png)
 
 ## Backend
 1. Handles incoming data from sensors.
