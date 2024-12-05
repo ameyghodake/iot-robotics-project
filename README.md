@@ -36,6 +36,11 @@ Ensure you have the following installed:
 6. **You need to update the postgres id password URL from backend.database file**
 
 # Project Components
+
+## Architecture
+
+![alt text](Architecture.png)
+
 ## Backend
 1. Handles incoming data from sensors.
 2. Stores sensor data in a PostgreSQL database.
@@ -65,7 +70,7 @@ Ensure you have the following installed:
 1. middleware/server.py: The main script for the middleware server. It establishes connections with sensor emulators and forwards data to the backend using API calls.
 
 ## Graphana Dashboards
-[text](README.md) ![text](results/smoke.png)
+![alt text](results/smoke.png)
 ![alt text](results/humidity.png)
 ![alt text](results/temperature.png)
 
