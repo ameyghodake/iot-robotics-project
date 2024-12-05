@@ -7,7 +7,7 @@ This project provides a complete smart home system with multiple sensor emulator
 
 Ensure you have the following installed:
 - **pgAdmin4** (Postgres SQL Database)
-- **Python 3.9+** (optional, for local development).
+- **Python 3.9+** (Run Python Package).
 - **Graphana** (Visualisation tool [Results added in results folder in the repo])
 
 ## Installation
